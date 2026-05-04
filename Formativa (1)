@@ -1,0 +1,104 @@
+#Para comando UPDATE
+from datetime import datetime
+
+lista_projetos = []
+
+while True:
+    comando = input("\nDigite um comando (ABOUT/ADD/LIST/UPDATE/DELETE/QUIT): ").upper()
+
+    if comando == "ABOUT":
+        print("Gestor de portfólio do/a Alex.")
+
+    elif comando == "ADD":
+        quantidade = int(input("Quantos projetos deseja adicionar? "))
+
+    #Para que a quantidade de projetos inserida seja válida
+        while quantidade <= 0:
+            quantidade = int(input("ERRO: insira um número válido: "))
+
+        for i in range(quantidade):
+            nome = input(f"Nome do projeto {i + 1}: ")
+
+        #Dicionário que será adicionado à lista
+            projeto = {
+                "nome": nome,
+                "concluido": False,  # padrão
+                "historico": []
+            }
+
+            lista_projetos.append(projeto)
+            print(f"Projeto '{nome}' adicionado com sucesso.")
+
+    #Caso o primeiro comando inserido seja LIST
+    elif comando == "LIST":
+        if not lista_projetos:
+            print("Nenhum projeto cadastrado.")
+        else:
+            print("\n=== Projetos ===")
+
+            #Enumeração ao chamar o comando List
+            for i, projeto in enumerate(lista_projetos, start=1):
+                #Verificar se projeto está definido como concluído ou pendente (linha 59)
+                status = "Concluído" if projeto["concluido"] \
+                    else "Pendente"
+                print(f"{i}. Nome: {projeto['nome']}")
+                print(f"   Status: {status}")
+                print(f"   Histórico: {projeto['historico']}")
+                print("-" * 30)
+
+    elif comando == "UPDATE":
+        nome_busca = input("Digite o nome do projeto que deseja atualizar: ")
+
+        encontrado = False
+
+        for projeto in lista_projetos:
+            if projeto["nome"] == nome_busca:
+                encontrado = True
+
+                novo_nome = input("Novo nome (ou ENTER para manter): ")
+                status_input = input("Está concluído? (s/n): ").lower()
+
+                if novo_nome:
+                    projeto["nome"] = novo_nome
+
+                if status_input == "s":
+                    projeto["concluido"] = True
+                elif status_input == "n":
+                    projeto["concluido"] = False
+
+                # Registro no histórico (tupla)
+                data = datetime.now().strftime("%d/%m/%Y %H:%M")
+                historico_registro = (
+                    data,
+                    projeto["concluido"],
+                    projeto["nome"]
+                )
+
+                projeto["historico"].append(historico_registro)
+
+                print("Projeto atualizado com sucesso.")
+                break
+
+        if not encontrado:
+            print("Projeto não encontrado.")
+
+    elif comando == "DELETE":
+        nome_busca = input("Digite o nome do projeto que deseja deletar: ")
+
+        for projeto in lista_projetos:
+            if projeto["nome"] == nome_busca:
+                #Remove o projeto referenciado, desde que esteja presente na lista de projetos
+                lista_projetos.remove(projeto)
+                print("Projeto removido com sucesso.")
+                break
+        else:
+            print("Projeto não encontrado.")
+
+    elif comando == "QUIT":
+        print("Saindo do sistema...")
+        break
+
+    else:
+        print("Comando inválido.")
+
+print("\nAté logo!")
